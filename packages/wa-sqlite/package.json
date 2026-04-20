@@ -1,0 +1,37 @@
+{
+  "name": "wa-sqlite",
+  "version": "1.1.0",
+  "type": "module",
+  "main": "src/sqlite-api.js",
+  "types": "src/types/index.d.ts",
+  "files": [
+    "src/sqlite-constants.js",
+    "src/sqlite-api.js",
+    "src/types/*",
+    "src/FacadeVFS.js",
+    "src/VFS.js",
+    "src/WebLocksMixin.js",
+    "src/examples/*",
+    "dist/*",
+    "test/*"
+  ],
+  "scripts": {
+    "build-docs": "typedoc",
+    "start": "web-dev-server --node-resolve",
+    "test": "web-test-runner",
+    "test-manual": "web-test-runner --manual"
+  },
+  "devDependencies": {
+    "@types/jasmine": "^5.1.4",
+    "@web/dev-server": "^0.4.6",
+    "@web/test-runner": "^0.20.2",
+    "@web/test-runner-core": "^0.13.4",
+    "comlink": "^4.4.1",
+    "jasmine-core": "^4.5.0",
+    "monaco-editor": "^0.34.1",
+    "typedoc": "^0.25.7",
+    "typescript": "^5.3.3",
+    "web-test-runner-jasmine": "^0.0.6"
+  },
+  "packageManager": "pnpm@10.11.0"
+}

@@ -1,0 +1,38 @@
+import { LineString } from "geojson";
+
+export type TestObject = {
+  id: string;
+  geometry: LineString;
+  text: string;
+  name: string;
+  description: string;
+  category: string;
+  tags: string[];
+  priority: number;
+  score: number;
+  latitude: number;
+  longitude: number;
+  altitude: number;
+  speed: number;
+  heading: number;
+  accuracy: number;
+  timestamp: string;
+  createdAt: string;
+  updatedAt: string;
+  expiresAt: string;
+  isActive: boolean;
+  isVerified: boolean;
+  isPublic: boolean;
+  version: number;
+  revision: number;
+  parentId: string | null;
+  ownerId: string;
+  groupId: string;
+  sourceUrl: string;
+  checksum: string;
+  mimeType: string;
+  encoding: string;
+  sizeBytes: number;
+  durationMs: number;
+  metadata: Record<string, string>;
+};

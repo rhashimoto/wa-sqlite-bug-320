@@ -1,0 +1,11 @@
+node_modules
+packages/main/dist
+
+.vscode
+.github
+
+pnpm-lock.yaml
+
+test
+demo
+docs
