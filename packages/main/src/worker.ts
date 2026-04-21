@@ -391,6 +391,7 @@ function registerUDF(sqlite3: SQLiteAPI, db: number): void {
   );
 }
 
+let batchCounter = 0;
 async function storeTestObjects(
   sqlite3: SQLiteAPI,
   db: number,
@@ -398,6 +399,7 @@ async function storeTestObjects(
   mutex: ConnectionMutex,
 ): Promise<void> {
   await mutex.lock();
+  console.log(`Storing batch ${batchCounter++}...`);
   try {
     await sqlite3.exec(db, "BEGIN IMMEDIATE");
 
@@ -418,6 +420,10 @@ async function storeTestObjects(
     }
 
     await sqlite3.exec(db, "COMMIT");
+
+    // Try manually intiating a checkpoint as autocheckpoint can't keep
+    // up with the write volume.
+    await sqlite3.exec(db, "PRAGMA wal_checkpoint");
   } catch (err) {
     await sqlite3.exec(db, "ROLLBACK").catch(() => {});
     throw err;
@@ -466,6 +472,7 @@ async function main(): Promise<void> {
   const { sqlite3, db } = await initDatabase();
   registerUDF(sqlite3, db);
   const mutex = new ConnectionMutex();
+  await sqlite3.exec(db, "PRAGMA wal_autocheckpoint=0"); // disable auto-checkpoint
   await createTable(sqlite3, db);
   await createValueIndexes(sqlite3, db);
   await createGeometryIndex(sqlite3, db);
