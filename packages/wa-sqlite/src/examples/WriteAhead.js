@@ -775,7 +775,7 @@ export class WriteAhead {
       id: 0, // placeholder
       pages: new Map(),
       dbFileSize: 0, // placeholder
-      waSalt1: this.#activeHeader.salt1,
+      waSalt1: 0, // placeholder
       waOffsetEnd: 0, // placeholder
     };
 
@@ -793,7 +793,7 @@ export class WriteAhead {
           {
             pageSize: frame.pageData.byteLength,
             waOffset: offset + FRAME_HEADER_SIZE,
-            waSalt1: tx.waSalt1,
+            waSalt1: this.#activeHeader.salt1,
           }
         );
       } else if (frame.frameType === FRAME_TYPE_COMMIT) {
@@ -804,6 +804,7 @@ export class WriteAhead {
         // Finalize the transaction fields and return it.
         tx.id = this.#txId;
         tx.dbFileSize = frame.dbFileSize;
+        tx.waSalt1 = this.#activeHeader.salt1;
         tx.newPageSize = (frame.flags & 1) ? tx.pages.get(0).pageSize : null;
         tx.waOffsetEnd = this.#activeOffset;
         return tx;
