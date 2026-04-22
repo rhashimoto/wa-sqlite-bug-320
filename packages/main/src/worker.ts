@@ -219,7 +219,7 @@ async function createGeometryIndex(
      END`,
   );
 
-  // Backfill existing rows
+  // Backfill existing rows (skip already-indexed objects)
   await sqlite3.exec(
     db,
     `INSERT INTO geo_spatial (_shape, object_id, index_name)
@@ -229,7 +229,10 @@ async function createGeometryIndex(
        'geometry'
      FROM test_objects
      WHERE data IS NOT NULL
-       AND convert_to_simple_polygon(json_extract(data, '$.geometry')) IS NOT NULL`,
+       AND convert_to_simple_polygon(json_extract(data, '$.geometry')) IS NOT NULL
+       AND id NOT IN (
+         SELECT object_id FROM geo_spatial_mapping WHERE index_name = 'geometry'
+       )`,
   );
 
   await sqlite3.exec(
@@ -238,9 +241,8 @@ async function createGeometryIndex(
      SELECT s.rowid, s.object_id, s.index_name
      FROM geo_spatial s
      WHERE s.index_name = 'geometry'
-       AND s.rowid > COALESCE(
-         (SELECT MAX(geo_rowid) FROM geo_spatial_mapping WHERE index_name = 'geometry'),
-         0
+       AND s.rowid NOT IN (
+         SELECT geo_rowid FROM geo_spatial_mapping WHERE index_name = 'geometry'
        )`,
   );
 
@@ -346,7 +348,7 @@ async function createFullTextIndex(
      END`,
   );
 
-  // Backfill existing rows
+  // Backfill existing rows (skip already-indexed objects)
   await sqlite3.exec(
     db,
     `INSERT INTO fulltext_search (fulltext_data, object_id, index_name)
@@ -356,7 +358,10 @@ async function createFullTextIndex(
        'description'
      FROM test_objects
      WHERE data IS NOT NULL
-       AND json_extract(data, '$.description') IS NOT NULL`,
+       AND json_extract(data, '$.description') IS NOT NULL
+       AND id NOT IN (
+         SELECT object_id FROM fulltext_mapping WHERE index_name = 'description'
+       )`,
   );
 
   await sqlite3.exec(
@@ -364,7 +369,10 @@ async function createFullTextIndex(
     `INSERT INTO fulltext_mapping (fulltext_rowid, object_id, index_name)
      SELECT s.rowid, s.object_id, s.index_name
      FROM fulltext_search s
-     WHERE s.index_name = 'description'`,
+     WHERE s.index_name = 'description'
+       AND s.rowid NOT IN (
+         SELECT fulltext_rowid FROM fulltext_mapping WHERE index_name = 'description'
+       )`,
   );
 
   await sqlite3.exec(db, "COMMIT");
